@@ -637,6 +637,15 @@
         type: [Boolean, Object] as PropType<boolean | Shortcuts>,
         default: false,
       },
+
+      /**
+       * The initial month to display in the picker without selecting a date.
+       * @type String
+       * @example "1404/08" | "1404/08/30"
+       */
+      initialValue: {
+        type: String,
+      },
     },
     emits: ['open', 'close', 'select', 'submit', 'clear', 'update:modelValue'],
     data() {
@@ -987,11 +996,21 @@
       this.core.calendar(calendar);
 
       const val = this.$attrs.modelValue as string | string[];
+
       if (val) {
         this.setDate(val);
+      } else if (this.initialValue) {
+        const initialDate = this.autoParseDate(this.initialValue);
+
+        if (this.checkDate(initialDate, 'date')) {
+          this.onDisplay = initialDate;
+        } else {
+          this.onDisplay = this.nearestDate(initialDate).startOf('date');
+        }
       } else {
         const today = this.core.clone();
         if (this.type == 'date') today.startOf('date');
+
         if (this.checkDate(today, 'date')) {
           this.onDisplay = today;
         } else {
@@ -1593,16 +1612,11 @@
       },
       setDate(dates: string | string[]) {
         if (!dates) return;
-        if (this.mode == 'single' && typeof dates === 'string') dates = [dates];
+        dates = Array.isArray(dates) ? dates : [dates];
         this.selectedDates = [];
         (dates as string[]).some((d, index) => {
-          const date = this.core
-            .clone()
-            .fromGregorian(
-              (this.type == 'time'
-                ? this.core.toString('YYYY-MM-DD') + ' '
-                : '') + d,
-            );
+          const date = this.autoParseDate(d);
+
           if (Core.isPersianDate(date)) {
             this.selectedDates.push(date.clone());
             this.selectedTimes.push(date.clone());
@@ -1613,6 +1627,19 @@
           }
         });
         if (this.selectedDates.length) this.submitDate();
+      },
+      autoParseDate(dateString: string): PersianDate {
+        const isShamsi = /^1[34]\d{2}[-/]/.test(dateString);
+
+        const fullDateString =
+          (this.type === 'time' ? this.core.toString('YYYY-MM-DD') + ' ' : '') +
+          dateString;
+
+        if (isShamsi) {
+          return this.core.clone().calendar('jalali').parse(fullDateString);
+        } else {
+          return this.core.clone().fromGregorian(fullDateString);
+        }
       },
     },
   });
