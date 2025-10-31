@@ -85,6 +85,8 @@ export type Langs = {
       nextMonth: string;
       now: string;
       submit: string;
+      hour: string;
+      minute: string;
       /* use in shourcuts */
       // date-single
       yesterday: string;

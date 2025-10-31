@@ -7,6 +7,7 @@
       { 'pdp-modal': modal },
       { 'pdp-dual': dualInput },
       lang.dir.input,
+      { 'pdp--time-panel-open': showTimePanel },
     ]"
   >
     <slot name="before">
@@ -161,6 +162,41 @@
             </div>
           </div>
           <div ref="pdpMain" class="pdp-main">
+            <div v-show="showTimePanel" class="pdp-time-panel">
+              <div class="pdp-time-panel-header">
+                <button
+                  class="pdp-time-panel-back"
+                  type="button"
+                  v-if="timePanelUnit === 'hour'"
+                  @click="showTimePanel = false"
+                >
+                  {{ lang.translations.hour || 'Hour' }}
+                </button>
+                <button
+                  class="pdp-time-panel-back"
+                  type="button"
+                  v-if="timePanelUnit === 'minute'"
+                  @click="showTimePanel = false"
+                >
+                  {{ lang.translations.minute || 'Minute' }}
+                </button>
+              </div>
+              <div class="pdp-time-panel-body">
+                <ul ref="timePanelList">
+                  <li
+                    v-for="(item, index) in timePanelValues"
+                    :key="index"
+                    :class="[
+                      { selected: item.selected },
+                      { disabled: item.disabled },
+                    ]"
+                    @click="selectTime(timePanelUnit, item.value)"
+                  >
+                    {{ item.label }}
+                  </li>
+                </ul>
+              </div>
+            </div>
             <div v-if="type.includes('date')" class="pdp-date">
               <div
                 v-for="(item, i) in columnCount"
@@ -234,11 +270,16 @@
                       @keyup.enter.prevent="stopChangeTime"
                     >
                       <slot name="up-arrow"><PDPArrow></PDPArrow></slot></button
-                    >{{
-                      selectedTimes[i]
-                        ? selectedTimes[i].hour('HH')
-                        : core.hour('HH')
-                    }}<button
+                    ><span
+                      class="pdp-time-display"
+                      @click="toggleTimeSelect('hour', i)"
+                    >
+                      {{
+                        selectedTimes[i]
+                          ? selectedTimes[i].hour('HH')
+                          : core.hour('HH')
+                      }} </span
+                    ><button
                       type="button"
                       @touchstart.prevent="startChangeTime(i, 'hour', 'sub')"
                       @mousedown.prevent="startChangeTime(i, 'hour', 'sub')"
@@ -266,11 +307,16 @@
                       @keyup.enter.prevent="stopChangeTime"
                     >
                       <slot name="up-arrow"><PDPArrow></PDPArrow></slot></button
-                    >{{
-                      selectedTimes[i]
-                        ? selectedTimes[i].minute('mm')
-                        : core.minute('mm')
-                    }}<button
+                    ><span
+                      class="pdp-time-display"
+                      @click="toggleTimeSelect('minute', i)"
+                    >
+                      {{
+                        selectedTimes[i]
+                          ? selectedTimes[i].minute('mm')
+                          : core.minute('mm')
+                      }} </span
+                    ><button
                       type="button"
                       @touchstart.prevent="startChangeTime(i, 'minute', 'sub')"
                       @mousedown.prevent="startChangeTime(i, 'minute', 'sub')"
@@ -637,6 +683,28 @@
         type: [Boolean, Object] as PropType<boolean | Shortcuts>,
         default: false,
       },
+
+      /**
+       * The step for the hour selection panel
+       * @type Number
+       * @default 1
+       * @since 3.0.0
+       */
+      hourStep: {
+        type: Number,
+        default: 1,
+      },
+
+      /**
+       * The step for the minute selection panel
+       * @type Number
+       * @default 5
+       * @since 3.0.0
+       */
+      minuteStep: {
+        type: Number,
+        default: 5,
+      },
     },
     emits: ['open', 'close', 'select', 'submit', 'clear', 'update:modelValue'],
     data() {
@@ -650,6 +718,9 @@
         showDatePicker: false,
         showYearSelect: false,
         showMonthSelect: false,
+        showTimePanel: false,
+        timePanelUnit: 'hour' as 'hour' | 'minute',
+        editingTimeIndex: 0,
         showTopOfInput: false,
         displayValue: [] as string[],
         inputName: 'firstInput' as Inputs,
@@ -719,7 +790,7 @@
             .find((bp) => this.documentWidth <= +bp);
           if (breakpoint) column = (this.column as Obj)[breakpoint] as number;
         }
-        if (this.type.includes('time')) {
+        if (this.type == 'time') {
           const scale = column / (this.mode == 'single' ? 1 : 2);
           (this.$refs.root as HTMLElement).style.setProperty(
             '--time-scale',
@@ -910,6 +981,47 @@
         }
         return shortcuts;
       },
+      hours(): object[] {
+        const hours = [];
+        const currentTime =
+          this.selectedTimes[this.editingTimeIndex] || this.core;
+        for (let h = 0; h < 24; h += this.hourStep) {
+          const tempDate = currentTime.clone();
+          tempDate.hour(h);
+          hours.push({
+            value: h,
+            label: tempDate.toString('HH'),
+            selected: currentTime.hour() === h,
+            disabled:
+              !this.checkDate(tempDate, 'time') || this.isInDisable(tempDate),
+          });
+        }
+        return hours;
+      },
+      minutes(): object[] {
+        const minutes = [];
+        const currentTime =
+          this.selectedTimes[this.editingTimeIndex] || this.core;
+        for (let m = 0; m < 60; m += this.minuteStep) {
+          const tempDate = currentTime.clone();
+          tempDate.minute(m);
+          minutes.push({
+            value: m,
+            label: tempDate.toString('mm'),
+            selected: currentTime.minute() === m,
+            disabled:
+              !this.checkDate(tempDate, 'time') || this.isInDisable(tempDate),
+          });
+        }
+        return minutes;
+      },
+      timePanelValues(): object[] {
+        if (this.timePanelUnit === 'hour') {
+          return this.hours;
+        } else {
+          return this.minutes;
+        }
+      },
     },
     watch: {
       show: {
@@ -923,6 +1035,7 @@
           else {
             if (!this.modal)
               document.removeEventListener('scroll', this.locate);
+            this.showTimePanel = false;
             this.$emit('close');
           }
         },
@@ -1613,6 +1726,84 @@
           }
         });
         if (this.selectedDates.length) this.submitDate();
+      },
+      toggleTimeSelect(unit: 'hour' | 'minute', index: number): void {
+        this.editingTimeIndex = index;
+        this.timePanelUnit = unit;
+        this.showTimePanel = true;
+        this.showYearSelect = false;
+        this.showMonthSelect = false;
+        this.$nextTick(() => {
+          const list = this.$refs.timePanelList as HTMLElement;
+          if (list) {
+            this.scrollToSelected(list);
+          }
+        });
+      },
+      scrollToSelected(container: HTMLElement): void {
+        if (!container) return;
+        const selectedEl = container.querySelector(
+          'li.selected',
+        ) as HTMLLIElement;
+        if (selectedEl) {
+          container.scrollTop =
+            selectedEl.offsetTop -
+            container.offsetHeight / 2 +
+            selectedEl.offsetHeight / 2;
+        }
+      },
+      selectTime(unit: 'hour' | 'minute', value: number): void {
+        const timeIndex = this.editingTimeIndex;
+        let time = this.selectedTimes[timeIndex];
+
+        if (!time) {
+          time = this.core.clone();
+          if (!this.checkDate(time, 'time')) {
+            time = this.toDate!.clone()
+              .subDay()
+              .time(this.core as PersianDate);
+          }
+          if (timeIndex === 1 && !this.selectedTimes.length) {
+            this.selectedTimes.push(time.clone());
+          }
+          this.selectedTimes[timeIndex] = time;
+        }
+
+        const newTime = time.clone()[unit](value);
+
+        if (this.checkDate(newTime, 'time') && !this.isInDisable(newTime)) {
+          if (
+            this.selectedTimes.length === 2 &&
+            ((timeIndex === 0 &&
+              this.selectedTimes[1] &&
+              newTime.isAfter(this.selectedTimes[1])) ||
+              (timeIndex === 1 &&
+                this.selectedTimes[0] &&
+                newTime.isBefore(this.selectedTimes[0])))
+          ) {
+            // invalid range
+          } else {
+            time[unit](value);
+
+            if (this.type === 'time') {
+              this.selectedDates[timeIndex] = time;
+            } else if (this.selectedDates[timeIndex]) {
+              this.selectedDates[timeIndex].time(time as PersianDate);
+            }
+
+            this.$emit('select', time);
+
+            if (
+              this.autoSubmit &&
+              !this.selectedTimes.some((sTime) =>
+                this.isInDisable(sTime as PersianDate),
+              )
+            ) {
+              this.submitDate(false);
+            }
+          }
+        }
+        this.showTimePanel = false;
       },
     },
   });

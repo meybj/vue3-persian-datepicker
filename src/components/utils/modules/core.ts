@@ -31,6 +31,8 @@ export const Core = {
         nextMonth: 'ماه بعد',
         now: 'هم اکنون',
         submit: 'تایید',
+        hour: 'ساعت',
+        minute: 'دقیقه',
         /* use in shourcuts */
         // date-single
         yesterday: 'دیروز',
@@ -84,6 +86,8 @@ export const Core = {
         nextMonth: 'Next Month',
         now: 'Now',
         submit: 'Submit',
+        hour: 'Hour',
+        minute: 'Minute',
         /* use in shourcuts */
         // date-single
         yesterday: 'Yesterday',
