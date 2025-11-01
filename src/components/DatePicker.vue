@@ -1776,10 +1776,10 @@
             this.selectedTimes.length === 2 &&
             ((timeIndex === 0 &&
               this.selectedTimes[1] &&
-              newTime.isAfter(this.selectedTimes[1])) ||
+              newTime.isAfter(this.selectedTimes[1] as PersianDate)) ||
               (timeIndex === 1 &&
                 this.selectedTimes[0] &&
-                newTime.isBefore(this.selectedTimes[0])))
+                newTime.isBefore(this.selectedTimes[0] as PersianDate)))
           ) {
             // invalid range
           } else {
