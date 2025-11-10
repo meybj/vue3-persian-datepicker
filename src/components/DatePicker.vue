@@ -440,6 +440,14 @@
     inheritAttrs: false,
     props: {
       /**
+       * The value of the datepicker, for use with v-model.
+       * @type String | Array
+       */
+      modelValue: {
+        type: [String, Array] as PropType<string | string[]>,
+        default: (props: Obj) => (props.mode === 'range' ? [] : ''),
+      },
+      /**
        * the format of the model value
        * @type String
        * @see https://alireza-ab.ir/persian-date/formats#
@@ -1033,6 +1041,45 @@
       },
     },
     watch: {
+      modelValue: {
+        handler(newValue) {
+          let currentVal;
+          if (this.submitedValue && this.submitedValue.length > 0) {
+            const formattedDates = this.submitedValue.map((d) =>
+              d.toString(this.formats.model),
+            );
+            if (this.mode === 'single') {
+              currentVal = formattedDates[0] || null;
+            } else {
+              currentVal = formattedDates;
+            }
+          } else {
+            currentVal = this.mode === 'single' ? null : [];
+          }
+
+          let normalizedNewValue;
+          if (this.mode === 'single') {
+            normalizedNewValue = Array.isArray(newValue)
+              ? newValue[0] || null
+              : newValue || null;
+          } else {
+            normalizedNewValue = Array.isArray(newValue)
+              ? newValue
+              : newValue
+                ? [newValue]
+                : [];
+          }
+
+          if (
+            JSON.stringify(normalizedNewValue) === JSON.stringify(currentVal)
+          ) {
+            return;
+          }
+
+          this.setDate(newValue);
+        },
+        deep: true,
+      },
       show: {
         handler: function (val) {
           this.showDatePicker = val;
@@ -1108,9 +1155,9 @@
         .calendar(calendar);
       this.core.calendar(calendar);
 
-      const val = this.$attrs.modelValue as string | string[];
+      const val = this.modelValue;
 
-      if (val) {
+      if (val && (Array.isArray(val) ? val.length > 0 : true)) {
         this.setDate(val);
       } else if (this.initialValue) {
         const initialDate = this.autoParseDate(this.initialValue);
@@ -1639,11 +1686,13 @@
         this.displayValue[inputIndex] = '';
         this.$emit('clear');
         if (this.dualInput) {
-          const values = this.$attrs.value;
-          if (values && Array.isArray(values))
-            return this.setModel(
-              values.map((val, i) => (i == inputIndex ? null : val)),
+          const values = this.modelValue;
+          if (values && Array.isArray(values)) {
+            const newValues = values.map((val, i) =>
+              i === inputIndex ? '' : val || '',
             );
+            return this.setModel(newValues);
+          }
         }
         this.setModel('');
       },
@@ -1723,23 +1772,53 @@
           this.submitDate();
         }
       },
-      setDate(dates: string | string[]) {
-        if (!dates) return;
-        dates = Array.isArray(dates) ? dates : [dates];
-        this.selectedDates = [];
-        (dates as string[]).some((d, index) => {
-          const date = this.autoParseDate(d);
+      setDate(dates: string | string[] | null | undefined) {
+        if (!dates || (Array.isArray(dates) && dates.length === 0)) {
+          this.selectedDates = [];
+          this.selectedTimes = [];
+          this.submitedValue = [];
+          this.displayValue = this.dualInput ? ['', ''] : [''];
+          return;
+        }
 
+        const values = Array.isArray(dates) ? dates : [dates];
+        const newSelectedDates: PersianDate[] = [];
+        const newSelectedTimes: PersianDate[] = [];
+        let firstDate: PersianDate | undefined;
+        let hasInvalidDate = false;
+
+        for (const d of values) {
+          if (!d) continue;
+          const date = this.autoParseDate(d);
           if (Core.isPersianDate(date)) {
-            this.selectedDates.push(date.clone());
-            this.selectedTimes.push(date.clone());
-            if (index == 0) this.onDisplay = date.clone();
+            newSelectedDates.push(date.clone());
+            newSelectedTimes.push(date.clone());
+            if (!firstDate) {
+              firstDate = date.clone();
+            }
           } else {
-            this.selectedDates = this.selectedTimes = [];
-            return true;
+            hasInvalidDate = true;
+            break;
           }
-        });
-        if (this.selectedDates.length) this.submitDate();
+        }
+
+        if (hasInvalidDate) {
+          this.selectedDates = [];
+          this.selectedTimes = [];
+        } else {
+          this.selectedDates = newSelectedDates;
+          this.selectedTimes = newSelectedTimes;
+          if (firstDate) {
+            this.onDisplay = firstDate;
+          }
+        }
+
+        if (this.selectedDates.length > 0) {
+          this.submitDate(false);
+        } else {
+          this.submitedValue = [];
+          this.displayValue = this.dualInput ? ['', ''] : [''];
+        }
       },
       autoParseDate(dateString: string): PersianDate {
         const isShamsi = /^1[34]\d{2}[-/]/.test(dateString);
@@ -1803,10 +1882,10 @@
             this.selectedTimes.length === 2 &&
             ((timeIndex === 0 &&
               this.selectedTimes[1] &&
-              newTime.isAfter(this.selectedTimes[1])) ||
+              newTime.isAfter(this.selectedTimes[1] as PersianDate)) ||
               (timeIndex === 1 &&
                 this.selectedTimes[0] &&
-                newTime.isBefore(this.selectedTimes[0])))
+                newTime.isBefore(this.selectedTimes[0] as PersianDate)))
           ) {
             // invalid range
           } else {

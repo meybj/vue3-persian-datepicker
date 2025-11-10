@@ -1,7 +1,7 @@
 {
-  "name": "@alireza-ab/vue3-persian-datepicker",
+  "name": "@meybj/vue3-persian-datepicker",
   "description": "A datepicker component for select date (vue 3)",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "files": [
     "dist/*",
     "src/*"
@@ -34,13 +34,19 @@
   },
   "homepage": "https://alireza-ab.ir/datepicker",
   "bugs": {
-    "url": "https://github.com/alireza-ab/vue3-persian-datepicker/issues"
+    "url": "https://github.com/meybj/vue3-persian-datepicker/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alireza-ab/vue3-persian-datepicker.git"
+    "url": "https://github.com/meybj/vue3-persian-datepicker.git"
   },
   "author": "Alireza Alibeiki <alibeikialireza@gmail.com>",
+  "contributors": [
+    {
+      "name": "meybj",
+      "url": "https://github.com/meybj"
+    }
+  ],
   "keywords": [
     "javascript",
     "js",
@@ -84,6 +90,7 @@
     "eslint-plugin-vue": "^10.5.0",
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
+    "rollup": "^4.52.5",
     "rollup-plugin-alias": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
