@@ -129,6 +129,7 @@ export type Styles = {
   'time-scale': string | number;
   radius: string;
   background: string;
+  [key: string]: string | number | undefined;
 };
 export type PickerPlace = { top?: boolean; right?: boolean; left?: boolean };
 export type Inputs = 'firstInput' | 'secondInput';

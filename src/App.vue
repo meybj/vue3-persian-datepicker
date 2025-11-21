@@ -3,7 +3,19 @@
 </script>
 
 <template>
-  <DatePicker alt-name="rest"></DatePicker>
+  <DatePicker
+    locale="fa"
+    :auto-submit="false"
+    :clearable="true"
+    mode="single"
+    type="datetime"
+    element="birth"
+    click-on="all"
+    shortcut
+    :column="3"
+    color="red"
+    placeholder="تاریخ تولد"
+  />
 </template>
 
 <style>

@@ -1,61 +1,107 @@
-$primary-color: #26baee;
+// --- EXISTING VARIABLES ---
+$primary-color: #26baee !default;
+$secondary-color: #9fe8fa !default;
+$in-range-background: #c9f1fb !default;
+$radius: 0.25rem !default;
+$text-color: #495057 !default;
+$hover-color: #000 !default;
+$background: #fff !default;
+$border-color: #ced4da !default;
+$z-index: 1000 !default;
+$disabled-opacity: 0.3 !default;
+$icon-background: #e9ecef !default;
+$overlay-color: transparent !default;
+$main-box-shadow: 1px 1px 8px 1px rgba(116, 116, 116, 0.5) !default;
+$day-dimensions: 2.08rem !default;
+$time-scale: 1 !default;
 
-$secondary-color: #9fe8fa;
+// --- NEW EXPANDED VARIABLES ---
 
-$in-range-background: #c9f1fb;
+// Typography
+$font-family: inherit !default;
+$font-size: 1rem !default;
 
-$radius: 0.25rem;
+// Input Styling
+$input-bg: #fff !default;
+$input-height: calc(1.5em + 0.75rem + 2px) !default;
+$input-padding: 0.375rem 0.75rem !default;
+$input-border-width: 1px !default;
+$input-focus-border-color: $primary-color !default;
 
-$text-color: #495057;
+// Header (Month/Year navigation)
+$header-bg: transparent !default;
+$header-text-color: $text-color !default;
 
-$hover-color: #000;
+// Weekdays (Sat, Sun, Mon...)
+$weekday-text-color: $text-color !default;
+$weekday-bg: transparent !default;
 
-$background: #fff;
+// Day Cells
+$day-text-color: $text-color !default;
+$day-hover-bg: $secondary-color !default;
+$day-selected-bg: $primary-color !default;
+$day-selected-text-color: #fff !default;
 
-$border-color: #ced4da;
+// Footer & Buttons
+$footer-bg: transparent !default;
+$button-bg: $primary-color !default;
+$button-text-color: #fff !default;
+$button-radius: $radius !default;
 
-$z-index: 1000;
-
-$disabled-opacity: 0.3;
-
-$icon-background: #e9ecef;
-
-$overlay-color: transparent;
-
-$main-box-shadow: 1px 1px 8px 1px rgba(116, 116, 116, 0.5);
-
-$day-dimensions: 2.08rem;
-
-$time-scale: 1;
+// Shortcuts Sidebar
+$shortcut-bg: transparent !default;
+$shortcut-text-color: $hover-color !default;
 
 .pdp {
-  --primary-color: #{$primary-color};
+  // --- Original ---
+  --pdp-primary-color: #{$primary-color};
+  --pdp-secondary-color: #{$secondary-color};
+  --pdp-in-range-background: #{$in-range-background};
+  --pdp-radius: #{$radius};
+  --pdp-text-color: #{$text-color};
+  --pdp-hover-color: #{$hover-color};
+  --pdp-background: #{$background};
+  --pdp-border-color: #{$border-color};
+  --pdp-z-index: #{$z-index};
+  --pdp-disabled-opacity: #{$disabled-opacity};
+  --pdp-icon-background: #{$icon-background};
+  --pdp-overlay-color: #{$overlay-color};
+  --pdp-main-box-shadow: #{$main-box-shadow};
+  --pdp-day-dimensions: #{$day-dimensions};
+  --pdp-time-scale: #{$time-scale};
 
-  --secondary-color: #{$secondary-color};
+  // --- New Typography ---
+  --pdp-font-family: #{$font-family};
+  --pdp-font-size: #{$font-size};
 
-  --in-range-background: #{$in-range-background};
+  // --- New Input ---
+  --pdp-input-bg: #{$input-bg};
+  --pdp-input-height: #{$input-height};
+  --pdp-input-padding: #{$input-padding};
+  --pdp-input-border-width: #{$input-border-width};
+  --pdp-input-focus-border-color: #{$input-focus-border-color};
 
-  --radius: #{$radius};
+  // --- New Header ---
+  --pdp-header-bg: #{$header-bg};
+  --pdp-header-text-color: #{$header-text-color};
 
-  --text-color: #{$text-color};
+  // --- New Weekdays ---
+  --pdp-weekday-text-color: #{$weekday-text-color};
+  --pdp-weekday-bg: #{$weekday-bg};
 
-  --hover-color: #{$hover-color};
+  // --- New Days ---
+  --pdp-day-text-color: #{$day-text-color};
+  --pdp-day-hover-bg: #{$day-hover-bg};
+  --pdp-day-selected-bg: #{$day-selected-bg};
+  --pdp-day-selected-text-color: #{$day-selected-text-color};
 
-  --background: #{$background};
+  // --- New Footer & Buttons ---
+  --pdp-footer-bg: #{$footer-bg};
+  --pdp-button-bg: #{$button-bg};
+  --pdp-button-text-color: #{$button-text-color};
+  --pdp-button-radius: #{$button-radius};
 
-  --border-color: #{$border-color};
-
-  --z-index: #{$z-index};
-
-  --disabled-opacity: #{$disabled-opacity};
-
-  --icon-background: #{$icon-background};
-
-  --overlay-color: #{$overlay-color};
-
-  --main-box-shadow: #{$main-box-shadow};
-
-  --day-dimensions: #{$day-dimensions};
-
-  --time-scale: #{$time-scale};
+  // --- New Shortcuts ---
+  --pdp-shortcut-bg: #{$shortcut-bg};
+  --pdp-shortcut-text-color: #{$shortcut-text-color};
 }

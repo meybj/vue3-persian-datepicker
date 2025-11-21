@@ -23,6 +23,7 @@
     width="1rem"
     xmlns="http://www.w3.org/2000/svg"
     v-bind="$attrs"
+    fill="currentColor"
   >
     <metadata>Clear icon</metadata>
     <path
@@ -31,11 +32,10 @@
   </svg>
   <svg
     v-else-if="icon === 'date'"
-    version="1.1"
     viewBox="20.711000442504883 19.33300018310547 51.29999542236328 53.48200225830078"
     xmlns="http://www.w3.org/2000/svg"
     v-bind="$attrs"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
+    fill="currentColor"
   >
     <metadata>Calendar icon</metadata>
     <g>
@@ -64,11 +64,10 @@
   </svg>
   <svg
     v-else-if="icon === 'datetime'"
-    xmlns:svg="http://www.w3.org/2000/svg"
     xmlns="http://www.w3.org/2000/svg"
     v-bind="$attrs"
     viewBox="7.146755218505859 47.93895721435547 195.70648193359375 201.1220703125"
-    version="1.1"
+    fill="currentColor"
   >
     <metadata>Calendar And Clock Icon</metadata>
     <g
@@ -140,6 +139,7 @@
     fill-rule="evenodd"
     clip-rule="evenodd"
     viewBox="0 0 24 24"
+    fill="currentColor"
   >
     <metadata>Clock Icon</metadata>
     <path

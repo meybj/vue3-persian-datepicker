@@ -31,9 +31,9 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="314.6749267578125 199.97494506835938 370.62506103515625 600.050048828125"
     :transform="rotate"
+    fill="currentColor"
   >
     <metadata>Arrow icon</metadata>
     <path

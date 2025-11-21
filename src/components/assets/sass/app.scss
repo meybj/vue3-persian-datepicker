@@ -12,8 +12,7 @@
     //--- left of datepicker ---//
     /* left: 1.2rem; */
     border: solid transparent;
-    border-bottom-color: variable.$background;
-    border-bottom-color: var(--background);
+    border-bottom-color: var(--pdp-background);
     border-width: 0.4rem;
   }
 }
@@ -26,11 +25,9 @@
     width: 0.4rem;
   }
   &::-webkit-scrollbar-thumb {
-    border-radius: variable.$radius;
-    border-radius: var(--radius);
+    border-radius: var(--pdp-radius);
     border: 0.1rem solid white; /* should match background, can't be transparent */
-    background: variable.$border-color;
-    background: var(--border-color);
+    background: var(--pdp-border-color);
   }
 }
 
@@ -96,40 +93,85 @@
 
 .pdp {
   position: relative;
+  font-family: var(--pdp-font-family);
+
+  // --- THEME PRESETS ---
+  &.pdp-color-red {
+    --pdp-primary-color: #c7004c;
+    --pdp-secondary-color: #ffaaaa;
+    --pdp-in-range-background: #ffd2d2;
+    --pdp-day-selected-bg: #c7004c;
+    --pdp-button-bg: #c7004c;
+    --pdp-input-focus-border-color: #c7004c;
+  }
+  &.pdp-color-pink {
+    --pdp-primary-color: #e56ab3;
+    --pdp-secondary-color: #ef87be;
+    --pdp-in-range-background: #fcbcd7;
+    --pdp-day-selected-bg: #e56ab3;
+    --pdp-button-bg: #e56ab3;
+    --pdp-input-focus-border-color: #e56ab3;
+  }
+  &.pdp-color-orange {
+    --pdp-primary-color: #ffa500;
+    --pdp-secondary-color: #ffbe47;
+    --pdp-in-range-background: #ffe0a6;
+    --pdp-day-selected-bg: #ffa500;
+    --pdp-button-bg: #ffa500;
+    --pdp-input-focus-border-color: #ffa500;
+  }
+  &.pdp-color-green {
+    --pdp-primary-color: #38a169;
+    --pdp-secondary-color: #89dda3;
+    --pdp-in-range-background: #c6f6d5;
+    --pdp-day-selected-bg: #38a169;
+    --pdp-button-bg: #38a169;
+    --pdp-input-focus-border-color: #38a169;
+  }
+  &.pdp-color-purple {
+    --pdp-primary-color: #7825d0;
+    --pdp-secondary-color: #c196ed;
+    --pdp-in-range-background: #d4baf3;
+    --pdp-day-selected-bg: #7825d0;
+    --pdp-button-bg: #7825d0;
+    --pdp-input-focus-border-color: #7825d0;
+  }
+  &.pdp-color-gray {
+    --pdp-primary-color: #494848;
+    --pdp-secondary-color: #909090;
+    --pdp-in-range-background: #b4b4b4;
+    --pdp-day-selected-bg: #494848;
+    --pdp-button-bg: #494848;
+    --pdp-input-focus-border-color: #494848;
+  }
+  // ---------------------
 
   &:not(.pdp-range) .pdp-day.start-range {
-    border-radius: variable.$radius !important;
-    border-radius: var(--radius) !important;
+    border-radius: var(--pdp-radius) !important;
   }
 
   &.pdp-range .pdp-picker.rtl .pdp-day.start-range {
-    border-radius: 0 variable.$radius variable.$radius 0 !important;
-    border-radius: 0 var(--radius) var(--radius) 0 !important;
+    border-radius: 0 var(--pdp-radius) var(--pdp-radius) 0 !important;
   }
 
   &.pdp-range .pdp-picker.rtl .pdp-day.end-range {
-    border-radius: variable.$radius 0 0 variable.$radius !important;
-    border-radius: var(--radius) 0 0 var(--radius) !important;
+    border-radius: var(--pdp-radius) 0 0 var(--pdp-radius) !important;
   }
 
   &.pdp-range .pdp-picker.rtl .pdp-day.end-range.start-range {
-    border-radius: variable.$radius !important;
-    border-radius: var(--radius) !important;
+    border-radius: var(--pdp-radius) !important;
   }
 
   &.pdp-range .pdp-picker.ltr .pdp-day.start-range {
-    border-radius: variable.$radius 0 0 variable.$radius !important;
-    border-radius: var(--radius) 0 0 var(--radius) !important;
+    border-radius: var(--pdp-radius) 0 0 var(--pdp-radius) !important;
   }
 
   &.pdp-range .pdp-picker.ltr .pdp-day.end-range {
-    border-radius: 0 variable.$radius variable.$radius 0 !important;
-    border-radius: 0 var(--radius) var(--radius) 0 !important;
+    border-radius: 0 var(--pdp-radius) var(--pdp-radius) 0 !important;
   }
 
   &.pdp-range .pdp-picker.ltr .pdp-day.end-range.start-range {
-    border-radius: variable.$radius !important;
-    border-radius: var(--radius) !important;
+    border-radius: var(--pdp-radius) !important;
   }
 
   &.rtl {
@@ -139,18 +181,14 @@
     .pdp-group {
       :first-child:not(.pdp-inside),
       .pdp-inside:first-child + input {
-        border-top-right-radius: variable.$radius;
-        border-top-right-radius: var(--radius);
-        border-bottom-right-radius: variable.$radius;
-        border-bottom-right-radius: var(--radius);
+        border-top-right-radius: var(--pdp-radius);
+        border-bottom-right-radius: var(--pdp-radius);
         margin-left: -1px;
       }
 
       input:last-of-type {
-        border-top-left-radius: variable.$radius;
-        border-top-left-radius: var(--radius);
-        border-bottom-left-radius: variable.$radius;
-        border-bottom-left-radius: var(--radius);
+        border-top-left-radius: var(--pdp-radius);
+        border-bottom-left-radius: var(--pdp-radius);
       }
 
       .pdp-icon.pdp-inside {
@@ -183,18 +221,14 @@
     .pdp-group {
       :first-child:not(.pdp-inside),
       .pdp-inside:first-child + input {
-        border-top-left-radius: variable.$radius;
-        border-top-left-radius: var(--radius);
-        border-bottom-left-radius: variable.$radius;
-        border-bottom-left-radius: var(--radius);
+        border-top-left-radius: var(--pdp-radius);
+        border-bottom-left-radius: var(--pdp-radius);
         margin-right: -1px;
       }
 
       input:last-of-type {
-        border-top-right-radius: variable.$radius;
-        border-top-right-radius: var(--radius);
-        border-bottom-right-radius: variable.$radius;
-        border-bottom-right-radius: var(--radius);
+        border-top-right-radius: var(--pdp-radius);
+        border-bottom-right-radius: var(--pdp-radius);
         font-family: sans-serif;
       }
 
@@ -302,14 +336,17 @@
 
     .pdp-input {
       display: block;
-      height: calc(1.5em + 0.75rem + 2px);
-      padding: 0.375rem 0.75rem;
-      font-size: 1rem;
+      height: var(--pdp-input-height);
+      padding: var(--pdp-input-padding);
+      font-size: var(--pdp-font-size);
       font-weight: 400;
       line-height: 1.5;
       background-clip: padding-box;
-      border: 1px solid variable.$border-color;
-      border: 1px solid var(--border-color);
+
+      background-color: var(--pdp-input-bg);
+      color: var(--pdp-text-color);
+
+      border: var(--pdp-input-border-width) solid var(--pdp-border-color);
       transition:
         border-color 0.15s ease-in-out,
         box-shadow 0.15s ease-in-out;
@@ -319,22 +356,18 @@
 
       &.pdp-focus {
         outline: none;
-        border-bottom: 2px solid variable.$primary-color;
-        border-bottom: 2px solid var(--primary-color);
+        border-bottom: 2px solid var(--pdp-input-focus-border-color);
       }
     }
 
     .pdp-icon {
-      padding: 0.375rem 0.75rem;
+      padding: var(--pdp-input-padding);
       line-height: 1.5;
-      font-size: 1rem;
-      color: variable.$text-color;
-      color: var(--text-color);
-      background: variable.$icon-background;
-      background: var(--icon-background);
-      border: 1px solid variable.$border-color;
-      border: 1px solid var(--border-color);
-      max-height: calc(1.5em + 0.75rem + 2px);
+      font-size: var(--pdp-font-size);
+      color: var(--pdp-text-color);
+      background: var(--pdp-icon-background);
+      border: 1px solid var(--pdp-border-color);
+      max-height: var(--pdp-input-height);
 
       &:nth-of-type(2) {
         margin-left: -1px;
@@ -368,25 +401,18 @@
     bottom: 0;
     right: 0;
     left: 0;
-    z-index: variable.$z-index;
-    z-index: var(--z-index);
-    background: variable.$overlay-color;
-    background: var(--overlay-color);
+    z-index: var(--pdp-z-index);
+    background: var(--pdp-overlay-color);
   }
 
   .pdp-picker {
     display: flex;
     position: absolute;
-    color: variable.$text-color;
-    color: var(--text-color);
-    background: variable.$background;
-    background: var(--background);
-    box-shadow: variable.$main-box-shadow;
-    box-shadow: var(--main-box-shadow);
-    z-index: variable.$z-index + 1;
-    z-index: calc(var(--z-index) + 1);
-    border-radius: variable.$radius;
-    border-radius: var(--radius);
+    color: var(--pdp-text-color);
+    background: var(--pdp-background);
+    box-shadow: var(--pdp-main-box-shadow);
+    z-index: calc(var(--pdp-z-index) + 1);
+    border-radius: var(--pdp-radius);
     transition: all 1s ease;
     margin-top: 0.5rem;
     padding: 0.3rem 0.6rem;
@@ -414,8 +440,7 @@
 
       .pdp-shortcut {
         border-right: unset;
-        border-left: 1px solid variable.$border-color;
-        border-left: 1px solid var(--border-color);
+        border-left: 1px solid var(--pdp-border-color);
       }
     }
 
@@ -500,29 +525,24 @@
         flex: 30% 0;
 
         &:not(.disabled):hover {
-          border-radius: variable.$radius;
-          border-radius: var(--radius);
-          border: 2px solid variable.$primary-color;
-          border: 2px solid var(--primary-color);
+          border-radius: var(--pdp-radius);
+          border: 2px solid var(--pdp-primary-color);
         }
 
         &.disabled {
           text-shadow: unset;
           box-shadow: unset;
           cursor: default !important;
-          opacity: variable.$disabled-opacity;
-          opacity: var(--disabled-opacity);
+          opacity: var(--pdp-disabled-opacity);
         }
 
         &.selected {
-          border: 2px solid variable.$primary-color;
-          border: 2px solid var(--primary-color);
-          border-radius: variable.$radius;
-          border-radius: var(--radius);
-          background: variable.$primary-color !important;
-          background: var(--primary-color) !important;
-          color: variable.$background;
-          color: var(--background);
+          border: 2px solid var(--pdp-primary-color);
+          border-radius: var(--pdp-radius);
+
+          background: var(--pdp-day-selected-bg) !important;
+
+          color: var(--pdp-day-selected-text-color);
         }
       }
 
@@ -530,9 +550,11 @@
     }
 
     .pdp-header {
+      background: var(--pdp-header-bg);
+      color: var(--pdp-header-text-color);
+
       & > div:first-child {
-        border-bottom: 1px solid variable.$border-color;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--pdp-border-color);
         margin-bottom: 0.5rem;
       }
 
@@ -547,8 +569,7 @@
           border: 0;
           background: inherit;
           cursor: pointer;
-          color: variable.$primary-color;
-          color: var(--primary-color);
+          color: var(--pdp-primary-color);
           padding: 0 0.5rem;
         }
       }
@@ -567,9 +588,8 @@
 
           .pdp-month,
           .pdp-year {
-            color: variable.$primary-color;
-            color: var(--primary-color);
-            font-size: 1rem;
+            color: var(--pdp-primary-color);
+            font-size: var(--pdp-font-size);
           }
         }
 
@@ -584,13 +604,11 @@
         }
 
         .pdp-arrow.disabled {
-          opacity: variable.$disabled-opacity;
-          opacity: var(--disabled-opacity);
+          opacity: var(--pdp-disabled-opacity);
         }
 
         .pdp-arrow:not(.disabled):hover {
-          opacity: variable.$disabled-opacity;
-          opacity: var(--disabled-opacity);
+          opacity: var(--pdp-disabled-opacity);
         }
       }
     }
@@ -607,17 +625,16 @@
 
           .pdp-week {
             background: inherit;
+            background: var(--pdp-weekday-bg);
+            color: var(--pdp-weekday-text-color);
             margin-bottom: 0.3rem;
             display: flex;
             justify-content: space-around;
 
             .pdp-weekday {
-              width: variable.$day-dimensions;
-              width: var(--day-dimensions);
-              height: variable.$day-dimensions;
-              height: var(--day-dimensions);
-              line-height: variable.$day-dimensions;
-              line-height: var(--day-dimensions);
+              width: var(--pdp-day-dimensions);
+              height: var(--pdp-day-dimensions);
+              line-height: var(--pdp-day-dimensions);
               font-size: 0.8rem;
               text-align: center;
             }
@@ -632,21 +649,19 @@
               align-items: center;
               margin: 0.1rem 0;
               font-size: 0.8rem;
-              width: variable.$day-dimensions;
-              width: var(--day-dimensions);
-              height: variable.$day-dimensions;
-              height: var(--day-dimensions);
-              border-radius: variable.$radius;
-              border-radius: var(--radius);
+              width: var(--pdp-day-dimensions);
+              height: var(--pdp-day-dimensions);
+              border-radius: var(--pdp-radius);
               padding: 0;
               cursor: pointer;
               transition-property: background-color, box-shadow;
               transition-duration: 0.1s;
               contain: content;
 
+              color: var(--pdp-day-text-color);
+
               &.friday {
-                color: variable.$primary-color;
-                color: var(--primary-color);
+                color: var(--pdp-primary-color);
               }
 
               &.empty {
@@ -655,10 +670,8 @@
 
               &.start-range,
               &.end-range {
-                background: variable.$primary-color;
-                background: var(--primary-color);
-                color: variable.$background;
-                color: var(--background);
+                background: var(--pdp-day-selected-bg);
+                color: var(--pdp-day-selected-text-color);
               }
 
               &.disabled {
@@ -666,35 +679,28 @@
                 text-shadow: unset;
                 cursor: default !important;
                 border-color: transparent;
-                opacity: variable.$disabled-opacity;
-                opacity: var(--disabled-opacity);
+                opacity: var(--pdp-disabled-opacity);
               }
 
               &.hover {
-                background: variable.$secondary-color !important;
-                background: var(--secondary-color) !important;
-                color: variable.$hover-color;
-                color: var(--hover-color);
+                background: var(--pdp-day-hover-bg) !important;
+                color: var(--pdp-hover-color);
               }
 
               &.in-range {
-                background: variable.$in-range-background;
-                background: var(--in-range-background);
-                color: variable.$hover-color;
-                color: var(--hover-color);
+                background: var(--pdp-in-range-background);
+                color: var(--pdp-hover-color);
                 border-radius: 0 !important;
               }
 
               &:not(.disabled):hover,
               &.today {
-                border: 2px solid variable.$primary-color;
-                border: 2px solid var(--primary-color);
+                border: 2px solid var(--pdp-primary-color);
               }
 
               &.tada {
                 animation: tada 1s;
-                background: variable.$secondary-color;
-                background: var(--secondary-color);
+                background: var(--pdp-secondary-color);
                 box-shadow: inset 0 4px 9px rgba(0, 0, 0, 0.24);
                 color: #000;
                 position: relative;
@@ -726,8 +732,7 @@
 
         .pdp-moment {
           margin-bottom: 1rem;
-          font-size: calc(2rem * variable.$time-scale);
-          font-size: calc(2rem * var(--time-scale));
+          font-size: calc(2rem * var(--pdp-time-scale));
           display: flex;
           justify-content: space-around;
           height: 100%;
@@ -745,8 +750,7 @@
             padding: 1rem 0;
 
             &.disabled {
-              opacity: variable.$disabled-opacity;
-              opacity: var(--disabled-opacity);
+              opacity: var(--pdp-disabled-opacity);
             }
 
             div {
@@ -761,8 +765,7 @@
                 cursor: pointer;
 
                 svg {
-                  width: calc(8px * variable.$time-scale);
-                  width: calc(8px * var(--time-scale));
+                  width: calc(8px * var(--pdp-time-scale));
                 }
               }
             }
@@ -777,9 +780,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid variable.$border-color;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid var(--pdp-border-color);
       padding: 0.5rem 0.3rem;
+      background: var(--pdp-footer-bg);
 
       .pdp-today,
       .pdp-submit {
@@ -787,14 +790,11 @@
         padding: 0.25rem 0.5rem;
         margin: 0 0.3rem;
         line-height: 1.5;
-        color: variable.$background;
-        color: var(--background);
+        color: var(--pdp-button-text-color);
         text-decoration: none;
         border: none;
-        border-radius: variable.$radius;
-        border-radius: var(--radius);
-        background: variable.$primary-color;
-        background: var(--primary-color);
+        border-radius: var(--pdp-button-radius);
+        background: var(--pdp-button-bg);
         cursor: pointer;
 
         &:hover {
@@ -815,31 +815,25 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      border-right: 1px solid variable.$border-color;
-      border-right: 1px solid var(--border-color);
+      border-right: 1px solid var(--pdp-border-color);
+      background: var(--pdp-shortcut-bg);
 
       li {
-        margin: 0;
         padding: 0.5rem 1rem;
         text-align: center;
         cursor: pointer;
-        border-radius: variable.$radius;
-        border-radius: var(--radius);
+        border-radius: var(--pdp-radius);
         margin: 0.25rem 0;
-        color: variable.$hover-color;
-        color: var(--hover-color);
+        color: var(--pdp-shortcut-text-color);
         font-weight: 500;
 
         &:hover {
-          background: variable.$in-range-background;
-          background: var(--in-range-background);
+          background: var(--pdp-in-range-background);
         }
 
         &.selected {
-          background: variable.$primary-color;
-          background: var(--primary-color);
-          color: variable.$background;
-          color: var(--background);
+          background: var(--pdp-day-selected-bg);
+          color: var(--pdp-day-selected-text-color);
         }
       }
     }
@@ -850,7 +844,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--background);
+      background: var(--pdp-background);
       z-index: 2;
       display: flex;
       flex-direction: column;
@@ -863,8 +857,8 @@
         justify-content: center; // Center title
         text-align: center;
         padding: 0.75rem;
-        border-bottom: 1px solid var(--border-color);
-        color: var(--primary-color);
+        border-bottom: 1px solid var(--pdp-border-color);
+        color: var(--pdp-primary-color);
         font-weight: bold;
 
         & > div {
@@ -876,7 +870,7 @@
         button {
           font-size: 1.2rem;
           background: inherit;
-          color: var(--primary-color);
+          color: var(--pdp-primary-color);
           border: 0;
           cursor: pointer;
 
@@ -912,18 +906,18 @@
             font-size: 0.9rem;
 
             &:hover:not(.disabled) {
-              background-color: #f0f0f0;
+              background-color: #f0f0f0; // Could utilize a hover var here
             }
 
             &.selected {
-              background-color: var(--primary-color) !important;
+              background-color: var(--pdp-primary-color) !important;
               color: white !important;
               font-weight: bold;
             }
 
             &.disabled {
               cursor: default !important;
-              opacity: var(--disabled-opacity);
+              opacity: var(--pdp-disabled-opacity);
               background-color: transparent !important;
               color: inherit;
             }
@@ -935,11 +929,11 @@
     .pdp-main .pdp-time .pdp-moment > div div .pdp-time-display {
       cursor: pointer;
       padding: 0 0.2rem;
-      border-radius: var(--radius);
+      border-radius: var(--pdp-radius);
       transition: background-color 0.15s ease-in-out;
 
       &:hover {
-        background-color: var(--in-range-background);
+        background-color: var(--pdp-in-range-background);
       }
     }
   }

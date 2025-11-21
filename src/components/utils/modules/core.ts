@@ -129,62 +129,7 @@ export const Core = {
     }
     return newObject;
   },
-  setStyles: function (styles: Obj | undefined, root: HTMLElement): void {
-    for (const name in styles) {
-      root.style.setProperty('--' + name, styles[name] as string);
-    }
-  },
-  setColor: function (color: string | undefined, root: HTMLElement): void {
-    if (!color) return;
-    let colors = {};
-    switch (color) {
-      case 'red':
-        colors = {
-          'primary-color': '#c7004c',
-          'secondary-color': '#ffaaaa',
-          'in-range-background': '#ffd2d2',
-        };
-        break;
-      case 'pink':
-        colors = {
-          'primary-color': '#e56ab3',
-          'secondary-color': '#ef87be',
-          'in-range-background': '#fcbcd7',
-        };
-        break;
-      case 'orange':
-        colors = {
-          'primary-color': '#ffa500',
-          'secondary-color': '#ffbe47',
-          'in-range-background': '#ffe0a6',
-        };
-        break;
-      case 'green':
-        colors = {
-          'primary-color': '#38a169',
-          'secondary-color': '#89dda3',
-          'in-range-background': '#c6f6d5',
-        };
-        break;
-      case 'purple':
-        colors = {
-          'primary-color': '#7825d0',
-          'secondary-color': '#c196ed',
-          'in-range-background': '#d4baf3',
-        };
-        break;
-      case 'gray':
-        colors = {
-          'primary-color': '#494848',
-          'secondary-color': '#909090',
-          'in-range-background': '#b4b4b4',
-        };
-        break;
-      default:
-        break;
-    }
-    this.setStyles(colors, root);
-  },
+
   getLastUnit: function (
     date: string,
     type: 'time' | 'datetime' | 'date',

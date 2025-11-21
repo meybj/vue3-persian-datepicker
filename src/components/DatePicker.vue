@@ -6,9 +6,11 @@
       { 'pdp-range': mode === 'range' },
       { 'pdp-modal': modal },
       { 'pdp-dual': dualInput },
+      `pdp-color-${color}`,
       lang.dir.input,
       { 'pdp--time-panel-open': showTimePanel },
     ]"
+    :style="computedStyles"
   >
     <slot name="before">
       <label v-if="label" :for="attrs.firstInput.id" v-bind="attrs.label">
@@ -348,7 +350,7 @@
             </div>
             <div>
               <button
-                v-if="checkDate(core, 'date')"
+                v-if="checkDate(core, 'date') && !shortcut"
                 class="pdp-today"
                 type="button"
                 :tabindex="tabIndex"
@@ -642,6 +644,7 @@
        */
       styles: {
         type: Object as PropType<Styles>,
+        default: () => ({}),
       },
 
       /**
@@ -654,6 +657,7 @@
         type: String as PropType<
           'blue' | 'red' | 'pink' | 'orange' | 'green' | 'purple' | 'gray'
         >,
+        default: 'blue', // Default is blue/cyan as defined in variables
         validator: (val: string) =>
           ['blue', 'red', 'pink', 'orange', 'green', 'purple', 'gray'].includes(
             val,
@@ -797,7 +801,29 @@
           .fill(null)
           .map(() => start++);
       },
+      computedStyles(): Record<string, string> {
+        const styles: Record<string, string> = {};
+
+        // 1. Dynamic Time Scale
+        if (this.type === 'time') {
+          // Force scale to 1 since column is forced to 1
+          styles['--pdp-time-scale'] = '1';
+        }
+
+        // 2. Map User Styles to Prefixed CSS Variables
+        if (this.styles) {
+          for (const [key, value] of Object.entries(this.styles)) {
+            // Remove existing prefix if user accidentally added it, then add pdp prefix
+            // If user passed 'primary-color', key becomes '--pdp-primary-color'
+            const cleanKey = key.replace(/^--/, '').replace(/^pdp-/, '');
+            styles[`--pdp-${cleanKey}`] = String(value);
+          }
+        }
+        return styles;
+      },
       columnCount(): number {
+        if (this.type === 'time') return 1;
+
         let column = 2;
         if (Core.isNumber(this.column)) {
           column = this.column as number;
@@ -806,13 +832,6 @@
             .sort((a, b) => +a - +b)
             .find((bp) => this.documentWidth <= +bp);
           if (breakpoint) column = (this.column as Obj)[breakpoint] as number;
-        }
-        if (this.type == 'time') {
-          const scale = column / (this.mode == 'single' ? 1 : 2);
-          (this.$refs.root as HTMLElement).style.setProperty(
-            '--time-scale',
-            (scale > 1 ? scale : 1) + '',
-          );
         }
         return column;
       },
@@ -1124,15 +1143,56 @@
         },
         deep: true,
       },
-      styles: {
-        handler: function (val) {
-          Core.setStyles(val, this.$refs.root as HTMLElement);
-        },
-        deep: true,
-      },
-      color: {
-        handler: function (val) {
-          Core.setColor(val, this.$refs.root as HTMLElement);
+      type: {
+        handler(newType) {
+          const calendar = this.lang.calendar;
+
+          // 1. Sanitize Boundaries:
+          // Props 'from' and 'to' do not change defaults dynamically.
+          // If we switch types, we must ignore stale defaults (e.g. "1499" when switching to time).
+          let fromVal = this.from;
+          let toVal = this.to;
+
+          const isTime = newType === 'time';
+          // Check if value looks like a year (4 digits, no colon)
+          const looksLikeDateDefault = (val: string) =>
+            !val.includes(':') && val.length === 4;
+          // Check if value looks like time (has colon)
+          const looksLikeTimeDefault = (val: string) => val.includes(':');
+
+          if (isTime) {
+            // If switching TO Time, but props look like years, use Time defaults
+            if (looksLikeDateDefault(fromVal)) fromVal = '00:00';
+            if (looksLikeDateDefault(toVal)) toVal = '23:59';
+          } else {
+            // If switching TO Date, but props look like Time, use Date defaults
+            if (looksLikeTimeDefault(fromVal)) fromVal = '1300';
+            if (looksLikeTimeDefault(toVal)) toVal = '1499';
+          }
+
+          // 2. Construct Full Date Strings
+          const prefix = isTime
+            ? this.core.toString('jYYYY/jMM/jDD') + ' '
+            : '';
+          const fullFrom = prefix + fromVal;
+          const fullTo = prefix + toVal;
+
+          // 3. Re-initialize Boundaries
+          this.fromDate = this.core.clone().parse(fullFrom).calendar(calendar);
+
+          this.toDate = this.core
+            .clone()
+            .parse(fullTo)
+            .endOf(Core.getLastUnit(toVal, newType))
+            .calendar(calendar);
+
+          // 4. Refresh Model
+          if (
+            this.modelValue &&
+            (Array.isArray(this.modelValue) ? this.modelValue.length : true)
+          ) {
+            this.setDate(this.modelValue);
+          }
         },
       },
     },
@@ -1140,9 +1200,6 @@
       this.langs = Core.mergeObject(this.langs, this.localeConfig) as Langs;
     },
     mounted() {
-      Core.setColor(this.color, this.$refs.root as HTMLElement);
-      Core.setStyles(this.styles, this.$refs.root as HTMLElement);
-
       const calendar = this.lang.calendar;
       this.fromDate = this.core
         .clone()
@@ -1347,29 +1404,32 @@
       },
       goToToday(): void {
         this.showMonthSelect = this.showYearSelect = false;
-        this.onDisplay = this.core.now().clone();
-        if (this.type.includes('time') && this.selectedDates.length) {
+        const now = this.core.now().clone();
+        this.onDisplay = now.clone();
+
+        if (this.type === 'time' && this.selectedDates.length > 0) {
+          // Preserve date, update time
           const lastIndex = this.selectedDates.length - 1;
-          const time = this.selectedDates[lastIndex];
-          time.time(this.onDisplay as PersianDate);
-          if (this.selectedTimes[lastIndex]) {
-            this.selectedTimes[lastIndex] = time.clone();
+          const d = this.selectedDates[lastIndex];
+          d.time(now);
+          this.selectDate(d, 'time');
+        } else {
+          // If datetime/single, reset time to ensure 'now' time is picked up
+          if (this.type === 'datetime' && this.mode === 'single') {
+            this.selectedTimes = [];
           }
-          if (
-            this.autoSubmit &&
-            this.checkDate(time, 'time') &&
-            !this.isInDisable(time as PersianDate)
-          )
-            this.submitDate(false);
+          this.selectDate(now, this.type.includes('time') ? 'time' : 'date');
         }
+
         if (this.type.includes('date'))
           this.$nextTick(() => {
-            document.querySelector('.pdp-day.today')!.classList.add('tada');
-            setTimeout(() => {
-              document
-                .querySelector('.pdp-day.today')!
-                .classList.remove('tada');
-            }, 1000);
+            const el = document.querySelector('.pdp-day.today');
+            if (el) {
+              el.classList.add('tada');
+              setTimeout(() => {
+                el.classList.remove('tada');
+              }, 1000);
+            }
           });
       },
       checkDate(date: unknown, part: CalendarPart | TypePart): boolean {
