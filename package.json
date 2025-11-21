@@ -1,7 +1,7 @@
 {
   "name": "@meybj/vue3-persian-datepicker",
   "description": "A datepicker component for select date (vue 3)",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "files": [
     "dist/*",
     "src/*"
@@ -25,7 +25,7 @@
     "build:lib": "rollup -c",
     "build:dts": "vue-tsc -d --emitDeclarationOnly -p src/components/DatePicker.vue --outDir dist",
     "build:nuxt": "unbuild",
-    "build": "rm -rf dist && pnpm build:nuxt && pnpm build:lib && pnpm build:dts",
+    "build": "pnpm build:nuxt && pnpm build:lib && pnpm build:dts",
     "test": "cypress run --component",
     "test:open": "cypress open --component",
     "lint": "eslint",
