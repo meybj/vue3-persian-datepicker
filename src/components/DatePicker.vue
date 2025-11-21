@@ -1410,7 +1410,9 @@
         if (this.type === 'time' && this.selectedDates.length > 0) {
           // Preserve date, update time
           const lastIndex = this.selectedDates.length - 1;
-          const d = this.selectedDates[lastIndex];
+
+          const d = this.selectedDates[lastIndex].clone();
+
           d.time(now);
           this.selectDate(d, 'time');
         } else {
