@@ -1397,7 +1397,7 @@
             this.selectedDates.push(date);
           }
 
-          this.selectedDates.sort((a, b) => (a.isAfter(b) ? 1 : -1));
+          this.selectedDates.sort((a, b) => a.valueOf() - b.valueOf());
         } else if (this.mode == 'range') {
           (this.$refs.pdpMain as HTMLElement).addEventListener(
             'mouseover',
