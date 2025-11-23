@@ -753,7 +753,7 @@
         displayValue: [] as string[],
         inputName: 'firstInput' as Inputs,
         pickerPlace: {} as PickerPlace,
-        documentWidth: isClient ? window.innerWidth : Infinity,
+        documentWidth: typeof window !== 'undefined' ? window.innerWidth : 1024,
         langs: Core.langs,
         currentLocale: this.locale.split(',')[0],
         interval: null as ReturnType<typeof setInterval> | null,
@@ -831,16 +831,37 @@
       columnCount(): number {
         if (this.type === 'time') return 1;
 
-        let column = 2;
-        if (Core.isNumber(this.column)) {
-          column = this.column as number;
-        } else {
-          const breakpoint = Object.keys(this.column)
-            .sort((a, b) => +a - +b)
-            .find((bp) => this.documentWidth <= +bp);
-          if (breakpoint) column = (this.column as Obj)[breakpoint] as number;
+        // Based on CSS: 7 days * 2.08rem + margins/padding.
+        // i use 280 to be safe.
+        const SINGLE_COLUMN_WIDTH = 280;
+
+        let column = 1;
+        if (typeof this.column === 'number') {
+          column = this.column;
+        } else if (typeof this.column === 'object') {
+          // Existing breakpoint logic as a fallback preference
+          const breakpoints = Object.keys(this.column)
+            .map(Number)
+            .sort((a, b) => a - b);
+          const activeBP = breakpoints.find((bp) => this.documentWidth <= bp);
+          // If current width is less than BP, use that value, else use the largest
+          column = activeBP
+            ? this.column[activeBP]
+            : this.column[breakpoints[breakpoints.length - 1]];
         }
-        return column;
+
+        // How many 280px blocks fit in the window?
+        // 40px for scrollbars/body-padding safety
+        const availableWidth = this.documentWidth - 40;
+        const maxPhysicalColumns = Math.floor(
+          availableWidth / SINGLE_COLUMN_WIDTH,
+        );
+
+        const safeMax = Math.max(1, maxPhysicalColumns);
+
+        // If User wants 3, but screen only fits 2 -> Return 2
+        // If User wants 1, and screen fits 5 -> Return 1
+        return Math.min(column, safeMax);
       },
       monthDays(): MonthDays[][] {
         const months: MonthDays[][] = [];
@@ -1118,10 +1139,19 @@
       },
       showDatePicker: {
         handler: function (val) {
-          if (val) this.$emit('open');
-          else {
-            if (!this.modal)
+          if (val) {
+            this.$emit('open');
+
+            if (!this.modal) {
+              setTimeout(() => {
+                document.addEventListener('click', this.clickOutside);
+              }, 0);
+            }
+          } else {
+            if (!this.modal) {
               document.removeEventListener('scroll', this.locate);
+              document.removeEventListener('click', this.clickOutside);
+            }
             this.showTimePanel = false;
             this.$emit('close');
           }
@@ -1210,6 +1240,10 @@
     },
     beforeMount() {
       this.langs = Core.mergeObject(this.langs, this.localeConfig) as Langs;
+    },
+    beforeUnmount() {
+      document.removeEventListener('click', this.clickOutside);
+      document.removeEventListener('scroll', this.locate);
     },
     mounted() {
       const calendar = this.lang.calendar;
@@ -2008,6 +2042,15 @@
           }
         }
         this.showTimePanel = false;
+      },
+      clickOutside(e: Event) {
+        if (
+          this.$refs.root &&
+          (this.$refs.root as HTMLElement).contains(e.target as Node)
+        ) {
+          return;
+        }
+        this.showDatePicker = false;
       },
     },
   });

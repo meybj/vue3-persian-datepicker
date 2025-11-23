@@ -623,6 +623,7 @@
       .pdp-date {
         display: flex;
         justify-content: center;
+        overflow-x: auto;
 
         .pdp-column {
           margin: 0 1rem;
