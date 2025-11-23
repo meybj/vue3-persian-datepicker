@@ -44,6 +44,7 @@ export type MonthDays = Obj<
     empty?: boolean;
     friday?: boolean;
     raw?: PersianDate;
+    selected?: boolean;
     startRange?: boolean;
     endRange?: boolean;
     inRange?: boolean;

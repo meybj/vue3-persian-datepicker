@@ -336,7 +336,8 @@
 
     .pdp-input {
       display: block;
-      height: var(--pdp-input-height);
+      min-height: var(--pdp-input-height);
+      margin: 0;
       padding: var(--pdp-input-padding);
       font-size: var(--pdp-font-size);
       font-weight: 400;
@@ -384,7 +385,7 @@
 
     .pdp-clear {
       border: none;
-      background-color: transparent;
+      background-color: var(--pdp-clear-background);
       position: absolute;
       left: 0.5rem;
       top: 0;
@@ -392,6 +393,7 @@
       z-index: 1;
       cursor: pointer;
       padding: 0 0.5rem;
+      max-height: calc(var(--pdp-input-height));
     }
   }
 
@@ -417,6 +419,8 @@
     margin-top: 0.5rem;
     padding: 0.3rem 0.6rem;
     animation: start 0.1s;
+    width: min-content;
+    max-width: 98vw;
 
     &.ltr {
       direction: ltr;
@@ -669,7 +673,8 @@
               }
 
               &.start-range,
-              &.end-range {
+              &.end-range,
+              &.selected {
                 background: var(--pdp-day-selected-bg);
                 color: var(--pdp-day-selected-text-color);
               }
@@ -784,6 +789,38 @@
       padding: 0.5rem 0.3rem;
       background: var(--pdp-footer-bg);
 
+      > div:first-child {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        margin-inline-end: 1rem;
+
+        small {
+          display: block;
+          white-space: normal;
+          word-break: break-word;
+          line-height: 1.6;
+          text-align: right;
+          max-height: 4.5rem;
+          overflow-y: auto;
+          padding: 0 0.2rem;
+
+          &::-webkit-scrollbar {
+            width: 4px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background-color: var(--pdp-border-color);
+            border-radius: 4px;
+          }
+        }
+      }
+
+      > div:last-child {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
       .pdp-today,
       .pdp-submit {
         font-size: 0.8rem;
@@ -796,16 +833,17 @@
         border-radius: var(--pdp-button-radius);
         background: var(--pdp-button-bg);
         cursor: pointer;
+        white-space: nowrap;
 
         &:hover {
           filter: brightness(0.9);
         }
       }
 
-      > div {
-        display: flex;
-        align-items: center;
+      .ltr & small {
+        text-align: left;
       }
+
     }
 
     .pdp-shortcut {
@@ -906,7 +944,8 @@
             font-size: 0.9rem;
 
             &:hover:not(.disabled) {
-              background-color: #f0f0f0; // Could utilize a hover var here
+              border-radius: var(--pdp-radius);
+              border: 2px solid var(--pdp-primary-color);
             }
 
             &.selected {

@@ -58,7 +58,11 @@
       :dates="submitedValue"
     />
     <div v-if="showDatePicker">
-      <div class="pdp-overlay" @click="showDatePicker = false"></div>
+      <div
+        v-if="modal"
+        class="pdp-overlay"
+        @click="showDatePicker = false"
+      ></div>
       <div v-bind="attrs.picker" ref="pdpPicker">
         <div class="pdp-auto">
           <div v-if="type.includes('date')">
@@ -225,6 +229,7 @@
                         { empty: day.empty },
                         { friday: day.friday },
                         { today: day.today },
+                        { selected: day.selected },
                         { 'start-range': day.startRange },
                         { 'end-range': day.endRange },
                         { disabled: day.disabled },
@@ -341,11 +346,12 @@
           <div class="pdp-footer">
             <div>
               <slot name="footer"></slot>
-              <small v-if="selectedDates[0]">
-                {{ selectedDates[0].toString(formats.display) }}
-              </small>
-              <small v-if="selectedDates.length == 2">
-                - {{ selectedDates[1].toString(formats.display) }}
+              <small v-if="selectedDates.length">
+                {{
+                  selectedDates
+                    .map((d) => d.toString(formats.display))
+                    .join(', ')
+                }}
               </small>
             </div>
             <div>
@@ -590,8 +596,9 @@
        */
       mode: {
         default: 'range',
-        type: String as PropType<'single' | 'range'>,
-        validator: (val: string) => ['single', 'range'].includes(val),
+        type: String as PropType<'single' | 'range' | 'multiple'>,
+        validator: (val: string) =>
+          ['single', 'range', 'multiple'].includes(val),
       },
 
       /**
@@ -862,6 +869,11 @@
                 month[week][day] = {
                   friday: day == 6,
                   raw: this.onDisplay!.clone().addMonth(i).date(showDay),
+                  selected:
+                    this.mode === 'multiple' &&
+                    this.selectedDates.some((d) =>
+                      d.isSame(selectedYear, selectedMonth, showDay),
+                    ),
                   startRange:
                     this.selectedDates[0] &&
                     this.selectedDates[0].isSame(
@@ -1340,6 +1352,18 @@
         }
         if (this.mode == 'single') {
           this.selectedDates = [date];
+        } else if (this.mode == 'multiple') {
+          const existsIndex = this.selectedDates.findIndex((d) =>
+            d.isSame(date, 'date'),
+          );
+
+          if (existsIndex !== -1) {
+            this.selectedDates.splice(existsIndex, 1);
+          } else {
+            this.selectedDates.push(date);
+          }
+
+          this.selectedDates.sort((a, b) => (a.isAfter(b) ? 1 : -1));
         } else if (this.mode == 'range') {
           (this.$refs.pdpMain as HTMLElement).addEventListener(
             'mouseover',
@@ -1682,17 +1706,29 @@
         const displayDate = this.selectedDates.map((el) => {
           return el.toString(this.formats.input);
         });
-        if (this.dualInput) this.displayValue = displayDate;
-        else this.displayValue[0] = displayDate.join(' - ');
 
+        if (this.dualInput) {
+          this.displayValue = displayDate;
+        } else {
+          if (this.mode === 'range') {
+            this.displayValue[0] = displayDate.join(' - ');
+          } else if (this.mode === 'multiple') {
+            this.displayValue[0] = displayDate.join(', ');
+          } else {
+            this.displayValue[0] = displayDate[0] || '';
+          }
+        }
         this.submitedValue = this.selectedDates.slice();
         this.setModel();
         this.$emit(
           'submit',
-          this.mode === 'range' ? this.selectedDates : this.selectedDates[0],
+          this.mode === 'single' ? this.selectedDates[0] : this.selectedDates,
         );
+
         if (close) {
-          this.showDatePicker = false;
+          if (this.mode !== 'multiple') {
+            this.showDatePicker = false;
+          }
         }
       },
       getColumn({ parentNode }: HTMLElement): number | string {
